@@ -2,12 +2,13 @@
 
 """
 Author: Gary Foreman
-Last Modified: November 24, 2014
+Last Modified: November 25, 2014
 Solution to Exercise 2 of Andrew Ng's Machine Learning course on OpenClassroom
 """
 
 from __future__ import print_function
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
 
@@ -32,7 +33,7 @@ def plot1(x, y):
 
 def gradient_descent(theta, x, y):
     """Implementation of the gradient descent algorithm"""
-    m = len(y)
+    m = len(y) #store the number of training examples
     delta = 1. / m * np.sum((theta.T.dot(x) - y.T) * x, axis=1)
     return theta - ALPHA * delta
 
@@ -41,11 +42,40 @@ def plot2(x, theta):
     plt.plot(x[1,:], theta.T.dot(x), label='Linear regression')
     plt.legend(loc='lower right')
     plt.show()
+    plt.clf()
 
 def hypothesis(x, theta):
     """Return the estimated height given the age and the result of the
     regression."""
     return theta[0] + theta[1] * x
+
+def plot3(x, y):
+    """Plot the J(theta) surface."""
+    m = len(y) #store the number of training examples
+    J_vals = np.empty((100, 100), dtype=np.float)
+    theta0_vals = np.linspace(-3., 3., 100)
+    theta1_vals = np.linspace(-1., 1., 100)
+    for i in xrange(len(theta0_vals)):
+        for j in xrange(len(theta1_vals)):
+            t = np.array([theta0_vals[i], theta1_vals[j]])
+            J_vals[i,j] = 0.5 / m * np.sum((t.T.dot(x) - y.T) ** 2)
+
+    J_vals = J_vals.T
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    X, Y = np.meshgrid(theta0_vals, theta1_vals)
+    Z = J_vals.reshape(X.shape)
+    ax.plot_surface(X, Y, Z)
+    plt.xlabel(r'$\theta_0$')
+    plt.ylabel(r'$\theta_1$')
+    plt.show()
+    plt.clf()
+
+    #contours
+    plt.contour(X, Y, Z, np.logspace(-2, 2, 15))
+    plt.xlabel(r'$\theta_0$')
+    plt.ylabel(r'$\theta_1$')
+    plt.show()
 
 if __name__ == '__main__':
     age, height = load_data()
@@ -76,3 +106,5 @@ if __name__ == '__main__':
           hypothesis(3.5, theta))
     print('The height of a 7 year-old boy is %6.4f meters.' %
           hypothesis(7., theta))
+
+    plot3(age, height)
