@@ -34,7 +34,7 @@ def plot1(x, y):
 def gradient_descent(theta, x, y):
     """Implementation of the gradient descent algorithm"""
     m = len(y) #store the number of training examples
-    delta = 1. / m * np.sum((theta.T.dot(x) - y.T) * x, axis=1)
+    delta = 1. / m * np.sum((theta.dot(x) - y) * x, axis=1)
     return theta - ALPHA * delta
 
 def plot2(x, theta):
