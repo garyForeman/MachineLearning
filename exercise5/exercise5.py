@@ -3,7 +3,7 @@
 """
 Author: Gary Foreman
 Last Modified: December 14, 2014
-Solution to Exercise 4 of Andrew Ng's Machine Learning course on OpenClassroom
+Solution to Exercise 5 of Andrew Ng's Machine Learning course on OpenClassroom
 """
 
 from __future__ import print_function
