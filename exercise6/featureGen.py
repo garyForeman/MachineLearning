@@ -2,7 +2,7 @@
 
 """
 Author: Gary Foreman
-Last Modified: January 2, 2015
+Last Modified: January 12, 2015
 Prepares feature vectors from raw email files packaged in ex6DataEmails.zip.
 Writes features to files similar to those found in ex6DataPrepared.zip.
 """
@@ -13,13 +13,13 @@ from os.path import isfile, join
 
 
 DATA_DIR = 'ex6DataEmails/'
-OUT_DIR = 'ex6DataPrepared/'
+OUT_DIR = 'ex6DataGenerated/'
 EMAIL_DIRS = ['nonspam-train/', 'spam-train/', 'nonspam-test/', 'spam-test/']
 DICT_LENGTH = 2500
-TRAIN_FILES = 350
+TRAIN_FILES = 350 #of each type
 TEST_FILES = 130
 TEST_FEATURES = 'test-features.txt'
-TRAIN_FEATURES = 'train_features.txt'
+TRAIN_FEATURES = 'train-features.txt'
 TEST_LABELS = 'test-labels.txt'
 TRAIN_LABELS = 'train-labels.txt'
 
@@ -41,14 +41,19 @@ def generate_dictionary(content, dict_name):
         else:
             dict_name[word] = 1
 
-def file_generator(email_dirs):
+def file_generator(email_dirs, train=False):
     """Yields all files in the directories of the list email_dirs"""
     for e_dir in email_dirs:
         directory = DATA_DIR + e_dir
         files = [directory + f for f in listdir(directory)
                  if isfile(join(directory, f))]
+        email_number = 0
         for file_name in files:
-            yield file_name
+            if train and email_number < TRAIN_FILES:
+                yield file_name
+                email_number += 1
+            elif not train:
+                yield file_name
 
 def full_dictionary():
     """
@@ -101,8 +106,10 @@ def feature_files():
     filter_dictionary = full_dictionary()
     file_list = [OUT_DIR + TRAIN_FEATURES, OUT_DIR + TEST_FEATURES]
     for j, file_name in enumerate(file_list):
+        train = j == 0
         with open(file_name, 'w') as outfile:
-            for i, email in enumerate(file_generator(EMAIL_DIRS[j:j+2])):
+            for i, email in enumerate(file_generator(EMAIL_DIRS[j*2:(j+1)*2],
+                                                     train)):
                 content = load_email(email)
                 email_dict = {}
                 generate_dictionary(content, email_dict)
